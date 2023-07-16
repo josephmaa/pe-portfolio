@@ -188,5 +188,16 @@ def get_time_line_post():
     }
 
 
+@app.route("/timeline", methods=["GET", "POST"])
+def timeline():
+    if request.method == "POST":
+        post_time_line_post()
+    model_dict = get_time_line_post()
+    sorted_posts = model_dict["timeline_posts"]
+    sorted_posts.sort(key=lambda post: post["created_at"], reverse=True)
+
+    return render_template("timeline.html", title="Timeline", sorted_posts=sorted_posts)
+
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
