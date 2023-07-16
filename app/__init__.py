@@ -1,11 +1,48 @@
 import os
+import datetime
 from flask import Flask, render_template, request
-from dotenv import load_dotenv
-from app.text import about_text, work_text_joseph, work_text_dilnaz, about_text_dilnaz, work_text, about_text_maya, \
-    work_text_maya, education_text, education_text_dilnaz, education_text_joseph, education_text_maya
+from playhouse.shortcuts import model_to_dict
 
-load_dotenv()
+# from dotenv import load_dotenv
+from app.text import (
+    about_text,
+    work_text_joseph,
+    work_text_dilnaz,
+    about_text_dilnaz,
+    work_text,
+    about_text_maya,
+    work_text_maya,
+    education_text,
+    education_text_dilnaz,
+    education_text_joseph,
+    education_text_maya,
+)
+from peewee import *
+
+# load_dotenv()
 app = Flask(__name__)
+
+mydb = MySQLDatabase(
+    os.getenv("MYSQL_DATABASE"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    host=os.getenv("MYSQL_HOST"),
+    port=3306,
+)
+
+
+class TimelinePost(Model):
+    name = CharField()
+    email = CharField()
+    content = TextField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = mydb
+
+
+mydb.connect()
+mydb.create_tables([TimelinePost])
 
 
 def mapping(coords):
@@ -25,8 +62,16 @@ def mapping(coords):
 
 @app.route("/")
 def index():
-    coords = [(34.037945, -117.677852), (45.231382, 16.577320), (45.537137, 119.137498), (48.0196, 66.9237),
-              (61.5240, 105.3188), (41.3775, 64.5853), (38.9637, 35.2433), (37.0902, -95.7129)]
+    coords = [
+        (34.037945, -117.677852),
+        (45.231382, 16.577320),
+        (45.537137, 119.137498),
+        (48.0196, 66.9237),
+        (61.5240, 105.3188),
+        (41.3775, 64.5853),
+        (38.9637, 35.2433),
+        (37.0902, -95.7129),
+    ]
     # Render the page with the map
     return render_template(
         "index.html",
@@ -38,7 +83,7 @@ def index():
         photo="logo",
         about_text=about_text,
         work_text=work_text,
-        education_text=education_text
+        education_text=education_text,
     )
 
 
@@ -57,13 +102,18 @@ def joseph():
         photo="logo",
         about_text=about_text,
         work_text=work_text_joseph,
-        education_text=education_text_joseph
+        education_text=education_text_joseph,
     )
 
 
 @app.route("/maya")
 def maya():
-    coords = [(19.43260, -99.133209), (39.9526, -75.1652), (6.3690, 34.8888), (52.3676,4.9041)]
+    coords = [
+        (19.43260, -99.133209),
+        (39.9526, -75.1652),
+        (6.3690, 34.8888),
+        (52.3676, 4.9041),
+    ]
 
     # Render the page with the map
     return render_template(
@@ -76,13 +126,19 @@ def maya():
         photo="profile",
         about_text=about_text_maya,
         work_text=work_text_maya,
-        education_text=education_text_maya
+        education_text=education_text_maya,
     )
 
 
 @app.route("/dilnaz")
 def dilnaz():
-    coords = [(48.0196, 66.9237), (61.5240, 105.3188), (41.3775, 64.5853), (38.9637, 35.2433), (37.0902, -95.7129)]
+    coords = [
+        (48.0196, 66.9237),
+        (61.5240, 105.3188),
+        (41.3775, 64.5853),
+        (38.9637, 35.2433),
+        (37.0902, -95.7129),
+    ]
 
     # Render the page with the map
     return render_template(
@@ -95,7 +151,7 @@ def dilnaz():
         photo="dilnaz",
         about_text=about_text_dilnaz,
         work_text=work_text_dilnaz,
-        education_text=education_text_dilnaz
+        education_text=education_text_dilnaz,
     )
 
 
@@ -110,6 +166,26 @@ def hobbies():
     ]
 
     return render_template("hobbies.html", title=title, hobbies_list=hobbies_list)
+
+
+@app.route("/api/timeline_post", methods=["POST"])
+def post_time_line_post():
+    name = request.form["name"]
+    email = request.form["email"]
+    content = request.form["content"]
+    timeline_post = TimelinePost.create(name=name, email=email, content=content)
+
+    return model_to_dict(timeline_post)
+
+
+@app.route("/api/timeline_post", methods=["GET"])
+def get_time_line_post():
+    return {
+        "timeline_posts": [
+            model_to_dict(p)
+            for p in TimelinePost.select().order_by(TimelinePost.created_at.desc())
+        ]
+    }
 
 
 if __name__ == "__main__":
