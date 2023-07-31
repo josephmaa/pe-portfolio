@@ -1,7 +1,9 @@
 import os
+import re
 import datetime
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from playhouse.shortcuts import model_to_dict
+from dotenv import load_dotenv
 
 # from dotenv import load_dotenv
 from app.text import (
@@ -19,7 +21,8 @@ from app.text import (
 )
 from peewee import *
 
-# load_dotenv()
+load_dotenv()
+
 app = Flask(__name__)
 
 if os.getenv("TESTING") == "true":
@@ -174,9 +177,26 @@ def hobbies():
 
 @app.route("/api/timeline_post", methods=["POST"])
 def post_time_line_post():
-    name = request.form["name"]
-    email = request.form["email"]
-    content = request.form["content"]
+    try:
+        name = request.form["name"]
+    except:
+        return jsonify({"error": "Invalid name"}), 400
+
+    try:
+        email = request.form["email"]
+    except:
+        return jsonify({"error": "Invalid email"}), 400
+
+    try:
+        content = request.form["content"]
+    except:
+        return jsonify({"error": "Invalid content"}), 400
+
+    email_pattern = r"[^@]+@[^@]+\.[^@]+"
+    if not re.match(email_pattern, email):
+        return jsonify({"error": "Invalid email"}), 400
+    if content == "":
+        return jsonify({"error": "Invalid content"}), 400
     timeline_post = TimelinePost.create(name=name, email=email, content=content)
 
     return model_to_dict(timeline_post)
@@ -195,13 +215,28 @@ def get_time_line_post():
 @app.route("/timeline", methods=["GET", "POST"])
 def timeline():
     if request.method == "POST":
-        post_time_line_post()
+        response = post_time_line_post()
+        if response[1] == 400:
+            return render_template("timeline.html", title="Timeline",
+                                   sorted_posts=get_time_line_post()["timeline_posts"], error=response[0]["error"])
     model_dict = get_time_line_post()
     sorted_posts = model_dict["timeline_posts"]
     sorted_posts.sort(key=lambda post: post["created_at"], reverse=True)
 
     return render_template("timeline.html", title="Timeline", sorted_posts=sorted_posts)
 
+
+if os.getenv("TESTING") == "true":
+    print("Running in test mode")
+    mydb = SqliteDatabase('file:memory?mode=memory&cache=shared', url=True)
+else:
+    mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+                         user=os.getenv("MYSQL_USER"),
+                         password=os.getenv("MYSQL_PASSWORD"),
+                         host=os.getenv("MYSQL_HOST"),
+                         port=3306
+
+                         )
 
 if __name__ == "__main__":
     app.run(debug=True)
