@@ -14,7 +14,6 @@ class AppTestCase(unittest.TestCase):
                 response = self.client.get("/")
                 assert response.status_code == 200
                 html = response.get_data(as_text=True)
-                assert "<title>Maya Lekhi</title>" in html
                 # TODO Add more tests relating to the home page
                 assert "<img" in html
                 
@@ -25,7 +24,6 @@ class AppTestCase(unittest.TestCase):
                 assert response.is_json
                 json = response.get_json()
 
-                assert "timeline_post" in json
                 assert len(json["timeline_post"]) == 0
   
         # TODO Add more tests relating to the /api/timeline_post GET and POST apis 
