@@ -1,5 +1,5 @@
 about_text = [
-    "The Major League Hacking (MLH) Fellowship is a highly competitive and prestigious program that provides aspiring technologists with a unique opportunity to gain real-world experience, enhance their skills, and collaborate on meaningful projects. The fellowship is designed to bridge the gap between traditional academic learning and practical industry experience.",
+    "The Major League Hacking (MLH) Fellowship is a highly competitive and prestigious program that provides aspiring technologists with a unique opportunity to gain real-world experience, enhance their skills, and collaborate on meaningful projects. The fellowship is designed to bridge the gap between traditional academic learning and practical industry experience in partnership with Meta.",
     "",
     "Here are some key aspects and features of the MLH Fellowship:",
     "",
