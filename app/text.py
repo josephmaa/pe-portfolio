@@ -15,7 +15,7 @@ about_text = [
     "",
     "6. Community and Support: The MLH Fellowship fosters a supportive community where fellows can engage with their peers, exchange ideas, and seek advice. They have access to a dedicated Slack channel, regular meetups, and social events to connect and build relationships with other fellows.",
     "",
-    "7. Stipend and Benefits: MLH Fellowship offers a competitive stipend to selected fellows, allowing them to focus on their projects without financial concerns. Fellows also receive perks such as access to industry tools, resources, and additional learning opportunities.",
+    "7. Stipend and Benefits: MLH Fellowship offers a competitive stipend to selected fellows, allowing them to focus on their projects without financial concerns. Fellows also receive perks such as access to industry tools, resources, and additional learning opportunities. They also give tons of mentorship!",
     "",
     "Overall, the MLH Fellowship provides an immersive and comprehensive experience that empowers aspiring technologists to develop their skills, work on real-world projects, and accelerate their careers in the tech industry. It serves as a launching pad for the next generation of innovators and problem solvers.",
 ]
